@@ -1,3 +1,13 @@
 # Ignore VS Code settings
-# Also ignore build output
+# Also ignore any build output in there
 .vscode/
+
+# Ignore the installed libraries and headers
+lib/
+include/
+
+# Ignore build output
+*.o
+*.a
+*.elf
+*.hex
