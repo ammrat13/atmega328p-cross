@@ -5,6 +5,14 @@ set(CMAKE_SYSTEM_NAME      "Generic")
 set(CMAKE_SYSTEM_PROCESSOR "avr")
 
 
+# Control where CMake looks for programs and libraries
+set(CMAKE_FIND_ROOT_PATH "/usr/lib/gcc/avr/11.1.0/")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+
 # Find the required programs
 # Have a variable to control different prefixes
 set(TARGET "avr-")
@@ -16,6 +24,9 @@ find_program(CMAKE_OBJCOPY      "${TARGET}objcopy" REQUIRED)
 find_program(CMAKE_AR           "${TARGET}ar"      REQUIRED)
 find_program(CMAKE_RANLIB       "${TARGET}ranlib"  REQUIRED)
 
+# Don't compile dynamic libraries
+set(BUILD_SHARED_LIBS OFF)
+
 # Set required compilation flags
 # Make sure to at least optimize for size, otherwise avr-libc fails
 add_compile_options("-mmcu=atmega328p")
@@ -25,15 +36,8 @@ add_compile_options("-Os")
 add_definitions("-DF_CPU=16000000")
 
 
-# Control where CMake looks for programs and libraries
-set(CMAKE_FIND_ROOT_PATH "/usr/lib/gcc/avr/11.1.0/")
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-
-
 # Program to upload code
+# Must be avrdude with this configuration
 find_program(AVR_UPLOAD "avrdude")
 
 # Settings for the uploader
@@ -72,4 +76,4 @@ function(add_avr_executable executable)
         DEPENDS "${executable}"
     )
 
-endfunction(add_avr_executable executable)
+endfunction()
