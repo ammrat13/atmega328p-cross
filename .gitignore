@@ -11,3 +11,9 @@ include/
 *.a
 *.elf
 *.hex
+
+# Ignore CMake output
+Makefile
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
