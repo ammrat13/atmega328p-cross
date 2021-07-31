@@ -17,8 +17,9 @@ find_program(CMAKE_AR           "${TARGET}ar"      REQUIRED)
 find_program(CMAKE_RANLIB       "${TARGET}ranlib"  REQUIRED)
 
 # Set required compilation flags
-set(CMAKE_C_FLAGS_INIT   "-mmcu=atmega328p")
-set(CMAKE_CXX_FLAGS_INIT "-mmcu=atmega328p")
+# Make sure to at least optimize for size, otherwise avr-libc fails
+add_compile_options("-mmcu=atmega328p")
+add_compile_options("-Os")
 
 # Set required definitions
 add_definitions("-DF_CPU=16000000")
