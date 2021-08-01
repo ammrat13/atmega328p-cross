@@ -5,13 +5,71 @@
 
 
 /**
- * Code for dealing with Serial IO
+ * Code for dealing with USART Serial IO
  *
  * It has classes to abstract away the MMIO needed for serial access, as well as
  * declarations for all the serial ports present on the platform.
  */
-namespace Serial {
+namespace USART {
 
+
+/**
+ * Encapsulates a USART's configuration
+ *
+ * Before use, a USART must be configured. The user must specify things like
+ * whether to send or recieve, whether and which parity to use, and the
+ * baud-rate with 2X if needed. This library does not allow the user to
+ * configure the number of bits to work with - it's always 8-bit.
+ */
+struct Settings {
+
+    /**
+     * Baud-rate register specification
+     *
+     * The lower twelve bits are the value that goes into UBRRn, while the most
+     * sigificant bit controls whether to use 2X
+     */
+    uint16_t baudrate;
+    /** Flag to use 2X mode for the baud-rate */
+    static constexpr uint16_t BAUDRATE_FLAG_USE_2X = (1 << 15);
+
+    /**
+     * Specification for all the other settings
+     *
+     * Bit 1 tells how many stop bits to use, bits [2:1] give the parity to
+     * expect, and bits [4:3] specify whether the reciever and transmitter are
+     * enabled respectively.
+     */
+    uint8_t flags;
+    /** Flag to use one stop bit */
+    static constexpr uint8_t FLAG_STOP_ONE = (0 << 0);
+    /** Flag to use two stop bits */
+    static constexpr uint8_t FLAG_STOP_TWO = (1 << 0);
+    /** Flag to specify no parity */
+    static constexpr uint8_t FLAG_PARITY_NONE = (0 << 1);
+    /** Flag to specify even parity */
+    static constexpr uint8_t FLAG_PARITY_EVEN = (2 << 1);
+    /** Flag to specify odd parity */
+    static constexpr uint8_t FLAG_PARITY_ODD = (3 << 1);
+    /** Flag to enable the transmitter */
+    static constexpr uint8_t FLAG_TX_EN = (1 << 3);
+    /** Flag to enable the reciever */
+    static constexpr uint8_t FLAG_RX_EN = (1 << 4);
+
+}; // struct Settings
+
+/**
+ * Structure to report errors USART operations
+ *
+ * Serial transmission can fail. For instance, there could be a parity error or
+ * a data overrun. This structure serves to report on those errors.
+ *
+ * If no error is present, there's a special value for that: `NO_ERROR`. It's
+ * set equal to zero.
+ */
+enum Error {
+    NO_ERROR = 0,
+}; // enum Error
 
 /**
  * USART interface on an AVR platform
@@ -46,19 +104,48 @@ public:
      */
     const uintptr_t base_address;
 
+    /**
+     * Configure the USART based on the settings given
+     *
+     * This will modify hardware registers to bring them in line with the
+     * configuration given. It will also enable the USART if that option was
+     * given. This must be done before using the USART, otherwise the default
+     * state of the registers will be used.
+     *
+     * @param [in] settings How to configure the serial port
+     */
+    void configure(Settings const &settings);
+
+    /**
+     * Put a character onto the USART and report any errors in transmission
+     *
+     * @param [in] c The character to put
+     * @return Any errors, or `NO_ERROR` if there weren't any
+     * @see Error
+     */
+    Error putc(uint8_t c);
+    /**
+     * Get a character from the USART and report any errors in transmission
+     *
+     * @param [out] c The character received
+     * @return Any errors, or `NO_ERROR` if there weren't any
+     * @see Error
+     */
+    Error getc(uint8_t &c);
+
 private:
 
     /** Offset to the A configuration register */
-    static const size_t UCSRnA_OFFSET = 0x0;
+    static constexpr size_t UCSRnA_OFFSET = 0x0;
     /** Offset to the B configuration register */
-    static const size_t UCSRnB_OFFSET = 0x1;
+    static constexpr size_t UCSRnB_OFFSET = 0x1;
     /** Offset to the C configuration register */
-    static const size_t UCSRnC_OFFSET = 0x2;
+    static constexpr size_t UCSRnC_OFFSET = 0x2;
 
     /** Offset to the baud-rate register */
-    static const size_t UBRRn_OFFSET = 0x4;
+    static constexpr size_t UBRRn_OFFSET = 0x4;
     /** Offset to the data register */
-    static const size_t UDRn_OFFSET = 0x6;
+    static constexpr size_t UDRn_OFFSET = 0x6;
 
 }; // class USART
 
@@ -85,7 +172,7 @@ private:
  *
  * @see NUM_SERIAL
  */
-extern const USART PORT[NUM_PORTS];
+extern USART PORT[NUM_PORTS];
 
 
-}; // namespace Serial
+}; // namespace USART
