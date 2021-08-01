@@ -32,7 +32,11 @@ set(BUILD_SHARED_LIBS OFF)
 add_compile_options("-mmcu=atmega328p")
 add_compile_options("-Os")
 
+# Similarly, add required link options
+add_link_options("-mmcu=atmega328p")
+
 # Set required definitions
+# These are needed for avr-libc
 add_definitions("-DF_CPU=16000000")
 
 
@@ -50,20 +54,16 @@ set(AVR_UPLOAD_FLAGS "-p" "m328p" "-c" "arduino")
 function(add_avr_executable executable)
 
     # Start by compiling the ELF file normally
-    add_executable("${executable}.elf" ${ARGN})
+    add_executable("${executable}" ${ARGN})
+    set_target_properties("${executable}" PROPERTIES SUFFIX ".elf")
 
     # Generate the IHEX file with OBJCOPY
     add_custom_command(
         OUTPUT "${executable}.hex"
         COMMAND ${CMAKE_OBJCOPY} -O ihex
-                                "$<TARGET_FILE:${executable}.elf>"
+                                "$<TARGET_FILE:${executable}>"
                                 "${executable}.hex"
         DEPENDS "${executable}.elf"
-        VERBATIM
-    )
-    add_custom_target(
-        "${executable}" ALL
-        DEPENDS "${executable}.hex"
         VERBATIM
     )
 
@@ -73,7 +73,7 @@ function(add_avr_executable executable)
         COMMAND ${AVR_UPLOAD} ${AVR_UPLOAD_FLAGS}
                               -P ${AVR_UPLOAD_PORT}
                               -U "flash:w:${executable}.hex:i"
-        DEPENDS "${executable}"
+        DEPENDS "${executable}.hex"
     )
 
 endfunction()
