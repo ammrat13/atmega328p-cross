@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21.0)
 
-project("Main" LANGUAGES CXX)
+project("main" LANGUAGES CXX)
 
 
 add_compile_options("-Os")

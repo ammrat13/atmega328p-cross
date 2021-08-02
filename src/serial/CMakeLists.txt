@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21.0)
 
-project("LibSerial" LANGUAGES CXX)
+project("serial" LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 
