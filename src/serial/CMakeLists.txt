@@ -11,10 +11,10 @@ add_compile_options("-ffunction-sections" "-fdata-sections")
 
 add_library(
     "serial"
-    "serial.cpp"
+    "src/serial.cpp"
 )
-set_target_properties(
-    "serial" PROPERTIES
-    PUBLIC_HEADER "serial.hpp"
+target_include_directories(
+    "serial"
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 )
 install(TARGETS "serial")

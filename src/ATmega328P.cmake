@@ -6,8 +6,8 @@ set(CMAKE_SYSTEM_PROCESSOR "avr")
 
 
 # Control where CMake looks for programs and libraries
-set(CMAKE_FIND_ROOT_PATH "/usr/lib/gcc/avr/11.1.0/")
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+# The user must specify CMAKE_FIND_ROOT_PATH if they want to use it
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
