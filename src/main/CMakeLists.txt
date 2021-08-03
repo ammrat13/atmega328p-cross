@@ -9,5 +9,4 @@ add_compile_options("-ffunction-sections" "-fdata-sections")
 
 
 add_avr_executable("main" "main.cpp")
-
 target_link_libraries("main" "serial")
