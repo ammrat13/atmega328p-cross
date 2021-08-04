@@ -2,8 +2,12 @@
 
 
 USART::Settings USART0_SETTINGS {
-    .baudrate = USART::Settings::BAUDRATE_FLAG_USE_2X | 16,
-    .flags = USART::Settings::FLAG_TX_EN,
+    .baudrate_register = 16,
+    .use_2X = true,
+    .tx_en = true,
+    .rx_en = false,
+    .stop_bits = USART::Settings::StopBits::ONE,
+    .parity = USART::Settings::Parity::NONE,
 };
 
 int main(void) {

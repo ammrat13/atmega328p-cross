@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 
 /**
@@ -23,38 +24,34 @@ namespace USART {
  */
 struct Settings {
 
-    /**
-     * Baud-rate register specification
-     *
-     * The lower twelve bits are the value that goes into UBRRn, while the most
-     * sigificant bit controls whether to use 2X
-     */
-    uint16_t baudrate;
-    /** Flag to use 2X mode for the baud-rate */
-    static constexpr uint16_t BAUDRATE_FLAG_USE_2X = (1 << 15);
+    /** Baud-rate register value */
+    // This must be specified first since CPP struct fields can't be reordered
+    unsigned baudrate_register : 12;
 
-    /**
-     * Specification for all the other settings
-     *
-     * Bit 1 tells how many stop bits to use, bits [2:1] give the parity to
-     * expect, and bits [4:3] specify whether the reciever and transmitter are
-     * enabled respectively.
-     */
-    uint8_t flags;
-    /** Flag to use one stop bit */
-    static constexpr uint8_t FLAG_STOP_ONE = (0 << 0);
-    /** Flag to use two stop bits */
-    static constexpr uint8_t FLAG_STOP_TWO = (1 << 0);
-    /** Flag to specify no parity */
-    static constexpr uint8_t FLAG_PARITY_NONE = (0 << 1);
-    /** Flag to specify even parity */
-    static constexpr uint8_t FLAG_PARITY_EVEN = (2 << 1);
-    /** Flag to specify odd parity */
-    static constexpr uint8_t FLAG_PARITY_ODD = (3 << 1);
-    /** Flag to enable the transmitter */
-    static constexpr uint8_t FLAG_TX_EN = (1 << 3);
-    /** Flag to enable the reciever */
-    static constexpr uint8_t FLAG_RX_EN = (1 << 4);
+    /** Whether to use 2X mode for the baud-rate */
+    bool use_2X : 1;
+
+    /** Whether to enable the transmitter */
+    bool tx_en : 1;
+    /** Whether to enable the reciever */
+    bool rx_en : 1;
+
+    /** Possible settings for the number of stop bits to use */
+    enum StopBits : bool {
+        ONE = 0,
+        TWO = 1,
+    };
+    /** Whether to use one (`false`) or two (`true`) stop bits */
+    StopBits stop_bits : 1;
+
+    /** Possible settings for the parity bits to use */
+    enum Parity : uint8_t {
+        NONE = 0, /** No parity */
+        EVEN = 2, /** Even parity */
+        ODD = 3,  /** Odd parity */
+    };
+    /** Setting for parity */
+    Parity parity : 2;
 
 }; // struct Settings
 
@@ -67,7 +64,7 @@ struct Settings {
  * If no error is present, there's a special value for that: `NO_ERROR`. It's
  * set equal to zero.
  */
-enum Error {
+enum Error : uint8_t {
     NO_ERROR = 0,
 }; // enum Error
 

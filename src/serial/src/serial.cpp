@@ -27,19 +27,19 @@ void USART::configure(Settings const &settings) {
     // Clear the transmit complete flag by writing one to it
     // Disable multi-processor communication
     // Set 2X if needed
-    *a_ptr = (1 << 6) | (0 << 0) | ((settings.baudrate & (1 << 15)) >> 14);
+    *a_ptr = (1 << 6) | (0 << 0) | (settings.use_2X << 1);
 
     // Set the mode to asynchronous
     // Set the data size to 8-bit
     // Set the parity and stop bits
-    *c_ptr = (0 << 6) | (3 << 1) | ((settings.flags & (7 << 0)) << 3);
+    *c_ptr = (0 << 6) | (3 << 1) | (settings.parity << 4) | (settings.stop_bits << 3);
 
     // Set the baud-rate register
-    *baud_ptr = settings.baudrate & ~(1 << 15);
+    *baud_ptr = settings.baudrate_register;
 
     // Finally, enable the reciever and transmitter as needed
     // Use the same settings from before
-    *b_ptr = (0 << 5) | (0 << 2) | ((settings.flags & (3 << 3)) << 0);
+    *b_ptr = (0 << 5) | (0 << 2) | (settings.rx_en << 4) | (settings.tx_en << 3);
 }
 
 
