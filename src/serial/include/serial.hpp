@@ -120,6 +120,9 @@ public:
     /**
      * Put a character onto the USART and report any errors in transmission
      *
+     * *Note:* Using this function with the reciever disabled leads to undefined
+     * behavior, usually a hang.
+     *
      * @param [in] c The character to put
      * @return Any errors, or `NO_ERROR` if there weren't any
      * @see Error
@@ -127,6 +130,9 @@ public:
     Error putc(uint8_t c);
     /**
      * Get a character from the USART and report any errors in transmission
+     *
+     * *Note:* Using this function with the transmitter disabled leads to
+     * undefined behavior, usually a hang.
      *
      * @param [out] c The character received
      * @return Any errors, or `NO_ERROR` if there weren't any
