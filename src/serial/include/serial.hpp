@@ -62,10 +62,14 @@ struct Settings {
  * a data overrun. This structure serves to report on those errors.
  *
  * If no error is present, there's a special value for that: `NO_ERROR`. It's
- * set equal to zero.
+ * set equal to zero. Other than that, there are other flags for an error - they
+ * can be bitwise-ORed together.
  */
 enum Error : uint8_t {
-    NO_ERROR = 0,
+    NONE = 0,    /** Indicates success */
+    PARITY = 1,  /** Parity error from `UPEn` */
+    OVERRUN = 2, /** Data overrun from `DORn` */
+    FRAME = 4,   /** Frame error from `FEn` */
 }; // enum Error
 
 /**

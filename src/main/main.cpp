@@ -5,7 +5,7 @@ USART::Settings USART0_SETTINGS {
     .baudrate_register = 16,
     .use_2X = true,
     .tx_en = true,
-    .rx_en = false,
+    .rx_en = true,
     .stop_bits = USART::Settings::StopBits::ONE,
     .parity = USART::Settings::Parity::NONE,
 };
@@ -13,6 +13,8 @@ USART::Settings USART0_SETTINGS {
 int main(void) {
     USART::PORT[0].configure(USART0_SETTINGS);
     while(1){
-        USART::PORT[0].putc('A');
+        uint8_t c;
+        USART::PORT[0].getc(c);
+        USART::PORT[0].putc(c);
     }
 }
