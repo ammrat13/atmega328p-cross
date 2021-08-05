@@ -11,7 +11,10 @@ add_compile_options("-ffunction-sections" "-fdata-sections")
 
 add_library(
     "serial"
-    "src/serial.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_error.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_config.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_put.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_get.cpp"
 )
 target_include_directories(
     "serial"

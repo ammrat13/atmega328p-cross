@@ -61,9 +61,9 @@ struct Settings {
  * Serial transmission can fail. For instance, there could be a parity error or
  * a data overrun. This structure serves to report on those errors.
  *
- * If no error is present, there's a special value for that: `NO_ERROR`. It's
- * set equal to zero. Other than that, there are other flags for an error - they
- * can be bitwise-ORed together.
+ * If no error is present, there's a special value for that: `NONE`. It's set
+ * equal to zero. Other than that, there are other flags for an error - they can
+ * be bitwise-ORed together.
  */
 enum Error : uint8_t {
     NONE = 0,    /** Indicates success */
@@ -71,6 +71,14 @@ enum Error : uint8_t {
     OVERRUN = 2, /** Data overrun from `DORn` */
     FRAME = 4,   /** Frame error from `FEn` */
 }; // enum Error
+/** Bitwise AND for the error type */
+Error operator&(const Error lhs, const Error rhs);
+/** Bitwise AND assignment for the error type */
+Error& operator&=(Error &lhs, const Error rhs);
+/** Bitwise OR for the error type */
+Error operator|(const Error lhs, const Error rhs);
+/** Bitwise OR assignment for the error type */
+Error& operator|=(Error &lhs, const Error rhs);
 
 /**
  * USART interface on an AVR platform
@@ -115,7 +123,7 @@ public:
      *
      * @param [in] settings How to configure the serial port
      */
-    void configure(Settings const &settings);
+    void configure(const Settings &settings);
 
     /**
      * Put a character onto the USART and report any errors in transmission
@@ -124,10 +132,28 @@ public:
      * behavior, usually a hang.
      *
      * @param [in] c The character to put
-     * @return Any errors, or `NO_ERROR` if there weren't any
+     * @return Any errors, or `Error::NONE` if there weren't any
      * @see Error
      */
     Error putc(uint8_t c);
+    /**
+     * Put `len` bytes from `buf` onto the USART and report any errors
+     * @param [in] buf The bytes to put
+     * @param [in] len How many bytes to put
+     * @return Any errors
+     * @see Error
+     * @see putc
+     */
+    Error putn(const uint8_t *buf, size_t len);
+    /**
+     * Put a null-terminated string onto the USART and report any errors
+     * @param [in] buf The string to put
+     * @return Any errors
+     * @see Error
+     * @see putc
+     */
+    Error puts(const char *buf);
+
     /**
      * Get a character from the USART and report any errors in transmission
      *

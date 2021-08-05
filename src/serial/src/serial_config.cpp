@@ -1,4 +1,4 @@
-#include "serial.hpp"
+#include <serial.hpp>
 
 
 namespace USART {
@@ -11,7 +11,7 @@ namespace USART {
 #endif
 
 
-void USART::configure(Settings const &settings) {
+void USART::configure(const Settings &settings) {
 
     // Get all the registers
     volatile uint16_t * const baud_ptr = reinterpret_cast<volatile uint16_t *>(this->base_address + UBRRn_OFFSET);
@@ -43,36 +43,4 @@ void USART::configure(Settings const &settings) {
 }
 
 
-Error USART::putc(uint8_t c){
-
-    // Get all the registers
-    volatile uint8_t * const data_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UDRn_OFFSET);
-    volatile uint8_t * const a_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UCSRnA_OFFSET);
-
-    // Wait for the transmit buffer to have space for new data
-    do {} while((*a_ptr & (1 << 5)) == 0);
-
-    // Write the data and return
-    *data_ptr = c;
-    return Error::NONE;
-}
-
-Error USART::getc(uint8_t &c) {
-
-    // Get all the registers
-    volatile uint8_t * const data_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UDRn_OFFSET);
-    volatile uint8_t * const a_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UCSRnA_OFFSET);
-
-    // Wait for there to be data
-    do {} while((*a_ptr & (1 << 7)) == 0);
-
-    // Read the data and return
-    // We have to read the return value first since it goes invalid when we read
-    //  the data
-    Error ret = static_cast<Error>((*a_ptr >> 2) & 7);
-    c = *data_ptr;
-    return ret;
-}
-
-
-}; // namespace Serial
+}; // namespace USART
