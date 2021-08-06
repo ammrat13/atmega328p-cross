@@ -4,7 +4,7 @@
 namespace USART {
 
 
-Error USART::putc(uint8_t c) {
+void USART::putc(uint8_t c) {
 
     // Get all the registers
     volatile uint8_t * const data_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UDRn_OFFSET);
@@ -15,33 +15,18 @@ Error USART::putc(uint8_t c) {
 
     // Write the data and return
     *data_ptr = c;
-    return Error::NONE;
 }
 
-Error USART::putn(const uint8_t *buf, size_t len) {
-
-    // Collect all the errors
-    Error ret = Error::NONE;
-
-    // Iterate `len` times
+void USART::putn(const uint8_t *buf, size_t len) {
     for(size_t i = 0; i < len; i++, buf++) {
-        ret |= this->putc(*buf);
+        this->putc(*buf);
     }
-
-    return ret;
 }
 
-Error USART::puts(const char *buf) {
-
-    // Collect all the errors
-    Error ret = Error::NONE;
-
-    // Iterate until a null terminator
+void USART::puts(const char *buf) {
     for(; *buf != 0; buf++) {
-        ret |= this->putc(*buf);
+        this->putc(*buf);
     }
-
-    return ret;
 }
 
 

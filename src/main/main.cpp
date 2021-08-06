@@ -11,10 +11,17 @@ USART::Settings USART0_SETTINGS {
 };
 
 int main(void) {
+
+    size_t num_read;
+    char buf[256];
+
     USART::PORT[0].configure(USART0_SETTINGS);
-    while(1){
-        uint8_t c;
-        USART::PORT[0].getc(c);
-        USART::PORT[0].putc(c);
+
+    while(1) {
+        USART::PORT[0].gets(buf, 256, num_read, '\r');
+
+        USART::PORT[0].putc('\n');
+        USART::PORT[0].puts(buf);
+        USART::PORT[0].putc('\n');
     }
 }

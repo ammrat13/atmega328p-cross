@@ -42,5 +42,14 @@ void USART::configure(const Settings &settings) {
     *b_ptr = (0 << 5) | (0 << 2) | (settings.rx_en << 4) | (settings.tx_en << 3);
 }
 
+Error USART::getError() const {
+
+    // Get the register to read from
+    volatile uint8_t * const a_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UCSRnA_OFFSET);
+
+    // Read from it
+    return static_cast<Error>((*a_ptr >> 2) & 7);
+}
+
 
 }; // namespace USART

@@ -124,38 +124,49 @@ public:
      * @param [in] settings How to configure the serial port
      */
     void configure(const Settings &settings);
+    /**
+     * Get the error flags currently set in the USART
+     *
+     * Read from the hardware registers to get this information. It will not
+     * modify the registers, just read them. Note however that reading from the
+     * USART will destroy these error flags.
+     *
+     * @return The current error flags set
+     */
+    Error getError() const;
 
     /**
-     * Put a character onto the USART and report any errors in transmission
+     * Put a character onto the USART
+     *
+     * This function cannot report an error. The error flags the hardware sets
+     * are specifically for recieving. Thus, this function returns `void`
+     * instead of `Error`.
      *
      * *Note:* Using this function with the reciever disabled leads to undefined
      * behavior, usually a hang.
      *
      * @param [in] c The character to put
-     * @return Any errors, or `Error::NONE` if there weren't any
-     * @see Error
      */
-    Error putc(uint8_t c);
+    void putc(uint8_t c);
     /**
-     * Put `len` bytes from `buf` onto the USART and report any errors
+     * Put `len` bytes from `buf` onto the USART
      * @param [in] buf The bytes to put
      * @param [in] len How many bytes to put
-     * @return Any errors
-     * @see Error
      * @see putc
      */
-    Error putn(const uint8_t *buf, size_t len);
+    void putn(const uint8_t *buf, size_t len);
     /**
-     * Put a null-terminated string onto the USART and report any errors
+     * Put a null-terminated string onto the USART
      * @param [in] buf The string to put
-     * @return Any errors
-     * @see Error
      * @see putc
      */
-    Error puts(const char *buf);
+    void puts(const char *buf);
 
     /**
-     * Get a character from the USART and report any errors in transmission
+     * Get a character from the USART
+     *
+     * Unlike `putc`, this function can report an error on the data read. It
+     * also destroys the error flags in the process, so be sure to save them.
      *
      * *Note:* Using this function with the transmitter disabled leads to
      * undefined behavior, usually a hang.
@@ -165,6 +176,37 @@ public:
      * @see Error
      */
     Error getc(uint8_t &c);
+    /**
+     * Get up to `len` characters from the USART
+     *
+     * It'll read until the first error, at which point it returns. The number
+     * of bytes read is returned as well.
+     *
+     * @param [in] buf The buffer to read into
+     * @param [in] len How many bytes to try to read
+     * @param [out] read How many bytes were actually read
+     */
+    Error getn(uint8_t *buf, size_t len, size_t &read);
+    /**
+     * Read up to `len` characters from the USART until the character `until`
+     *
+     * It'll read until it either encounters an error or until it hits the
+     * character specified by `until`. The number of bytes read is put in
+     * `read`. Note that the terminating `until` character is included in this
+     * count and in the final string.
+     *
+     * The parameter `len` indicates the length of the buffer, including the
+     * null terminator. A null terminator is automatically placed after `read`
+     * regardless of the reason of termination. Thus, `read` will be at most
+     * `len-1`.
+     *
+     * @param [in] buf The buffer to read into
+     * @param [in] len How many bytes to try to read
+     * @param [out] read How many bytes were actually read
+     * @param [in] until The character to read until
+     */
+    Error gets(char *buf, size_t len, size_t &read, char until);
+
 
 private:
 
