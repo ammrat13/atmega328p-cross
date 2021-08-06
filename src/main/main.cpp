@@ -18,7 +18,7 @@ int main(void) {
     USART::PORT[0].configure(USART0_SETTINGS);
 
     while(1) {
-        USART::PORT[0].gets(buf, 256, num_read, '\r');
+        USART::PORT[0].gets(buf, 256, num_read, '\n');
 
         USART::PORT[0].putc('\n');
         USART::PORT[0].puts(buf);
