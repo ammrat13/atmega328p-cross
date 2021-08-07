@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
+include(GNUInstallDirs)
 
 project("main" LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
@@ -12,6 +13,7 @@ target_compile_options(
     "-ffunction-sections" "-fdata-sections"
 )
 if( (CMAKE_BUILD_TYPE STREQUAL "Release")
+ OR (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
  OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))
     target_link_options(
         "main" PRIVATE

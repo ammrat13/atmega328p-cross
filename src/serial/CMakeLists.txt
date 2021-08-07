@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
+include(GNUInstallDirs)
 
 project("serial" LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
@@ -19,12 +20,23 @@ target_compile_options(
 
 target_include_directories(
     "serial" PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/"
-    "${CMAKE_CURRENT_BINARY_DIR}/include/"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 set_target_properties(
     "serial" PROPERTIES
     PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/serial.hpp"
 )
-install(TARGETS "serial")
+install(
+    TARGETS "serial"
+    EXPORT "serial-export"
+    CONFIGURATIONS "Release" "MinSizeRel" "RelWithDebInfo"
+)
+install(
+    EXPORT "serial-export"
+    CONFIGURATIONS "Release" "MinSizeRel" "RelWithDebInfo"
+    FILE "serial-config.cmake"
+    NAMESPACE "serial::"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/serial/"
+)

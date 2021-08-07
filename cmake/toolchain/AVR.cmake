@@ -16,7 +16,7 @@ set(CMAKE_SYSTEM_PROCESSOR "avr")
 # Control where CMake looks for programs and libraries
 # The user must specify CMAKE_FIND_ROOT_PATH if they want to use it
 set(
-    CMAKE_FIND_ROOT_PATH "/usr/lib/gcc/avr/11.1.0" CACHE STRING
+    CMAKE_FIND_ROOT_PATH "/usr/lib/gcc/avr/11.1.0/" CACHE STRING
     "A semicolon-separated list of directories to use when searching for includes and libraries"
 )
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
