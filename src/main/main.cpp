@@ -20,7 +20,6 @@ int main(void) {
     while(1) {
         USART::PORT[0].gets(buf, 256, num_read, '\n');
 
-        USART::PORT[0].putc('\n');
         USART::PORT[0].puts(buf);
         USART::PORT[0].putc('\n');
     }

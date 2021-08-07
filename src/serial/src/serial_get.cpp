@@ -51,7 +51,7 @@ Error USART::gets(char *buf, size_t len, size_t &read, char until) {
     // Keep track of whether we should continue. This way the increments still
     //  happen after the fact
     bool should_continue = true;
-    for(read = 0; read < len && should_continue; read++, buf++) {
+    for(read = 0; read < len-1 && should_continue; read++, buf++) {
         // Read a character
         // Cast to a uint8_t pointer for types
         ret = this->getc(*reinterpret_cast<uint8_t*>(buf));
@@ -62,7 +62,7 @@ Error USART::gets(char *buf, size_t len, size_t &read, char until) {
     }
 
     // Add the null terminator before returning
-    *buf = '\0';
+    *buf = 0;
     return ret;
 }
 
