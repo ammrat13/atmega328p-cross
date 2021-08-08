@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(
     "serial"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_error.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_config.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_put.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_get.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/error.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/put.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/get.cpp"
 )
 target_compile_options(
     "serial" PRIVATE
