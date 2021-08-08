@@ -23,4 +23,7 @@ if( (CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif()
 
-target_link_libraries("main" "serial")
+target_link_libraries(
+    "main" PRIVATE
+    "serial" "ymodem"
+)

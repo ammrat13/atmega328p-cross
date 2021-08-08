@@ -8,5 +8,8 @@ if( (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options("-g")
 endif()
 
+
 add_subdirectory("src/main")
+
 add_subdirectory("src/serial")
+add_subdirectory("src/ymodem")

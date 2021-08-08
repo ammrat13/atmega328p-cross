@@ -1,19 +1,16 @@
 cmake_minimum_required(VERSION 3.21.0)
 include(GNUInstallDirs)
 
-project("serial" LANGUAGES CXX)
+project("ymodem" LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 
 add_library(
-    "serial"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/error.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/put.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/get.cpp"
+    "ymodem"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/ymodem.cpp"
 )
 target_compile_options(
-    "serial" PRIVATE
+    "ymodem" PRIVATE
     "-Os"
     "-Wall" "-Wextra" "-Werror"
     "-ffunction-sections" "-fdata-sections"
@@ -21,29 +18,34 @@ target_compile_options(
 # Have separate directories for build and install
 # Needed because we'll be installing a CMake configuration too
 target_include_directories(
-    "serial" PUBLIC
+    "ymodem" PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
+target_link_libraries(
+    "ymodem" PUBLIC
+    "serial"
 )
 
 
 # Install the includes along with the library
 # Have to do this before the "install"
 set_target_properties(
-    "serial" PROPERTIES
-    PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/serial.hpp"
+    "ymodem" PROPERTIES
+    PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/ymodem.hpp"
 )
 install(
-    TARGETS "serial"
-    EXPORT "serial-export"
+    TARGETS "ymodem"
+    EXPORT "ymodem-export"
     CONFIGURATIONS "Release" "MinSizeRel" "RelWithDebInfo"
 )
 # Export the target so we can use it in other CMake projects
 # Have to do this after the "install"
 install(
-    EXPORT "serial-export"
+    EXPORT "ymodem-export"
     CONFIGURATIONS "Release" "MinSizeRel" "RelWithDebInfo"
-    FILE "serial-config.cmake"
-    NAMESPACE "serial::"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/serial/"
+    FILE "ymodem-config.cmake"
+    NAMESPACE "ymodem::"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ymodem/"
 )
+
