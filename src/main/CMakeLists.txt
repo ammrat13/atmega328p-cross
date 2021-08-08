@@ -12,6 +12,8 @@ target_compile_options(
     "-Wall" "-Wextra" "-Werror"
     "-ffunction-sections" "-fdata-sections"
 )
+# Garbage collecting sections can mask errors
+# So only do this if we are releasing
 if( (CMAKE_BUILD_TYPE STREQUAL "Release")
  OR (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
  OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))

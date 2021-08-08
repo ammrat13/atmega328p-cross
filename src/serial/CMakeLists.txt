@@ -18,16 +18,21 @@ target_compile_options(
     "-ffunction-sections" "-fdata-sections"
 )
 
+# Have separate directories for build and install
+# Needed because we'll be installing a CMake configuration too
 target_include_directories(
     "serial" PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
+# Install the includes along with the library
 set_target_properties(
     "serial" PROPERTIES
     PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/serial.hpp"
 )
+
+# Export the "serial" target so we can use it in other CMake projects
 install(
     TARGETS "serial"
     EXPORT "serial-export"
