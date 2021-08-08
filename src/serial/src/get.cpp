@@ -1,4 +1,5 @@
 #include <serial.hpp>
+#include <registers.hpp>
 
 
 namespace USART {
@@ -6,18 +7,16 @@ namespace USART {
 
 Error USART::getc(uint8_t &c) {
 
-    // Get all the registers
-    volatile uint8_t * const data_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UDRn_OFFSET);
-    volatile uint8_t * const a_ptr = reinterpret_cast<volatile uint8_t *>(this->base_address + UCSRnA_OFFSET);
-
-    // Wait for there to be data
-    do {} while((*a_ptr & (1 << 7)) == 0);
+    // Wait for there to be data in the recieve buffer
+    while((A_REG & (1 << 7)) == 0) {
+        // Spinlock
+    }
 
     // Read the data and return
     // We have to read the return value first since it goes invalid when we read
     //  the data
     Error ret = this->getError();
-    c = *data_ptr;
+    c = DATA_REG;
     return ret;
 }
 
@@ -54,7 +53,7 @@ Error USART::gets(char *buf, size_t len, size_t &read, char until) {
     for(read = 0; read < len-1 && should_continue; read++, buf++) {
         // Read a character
         // Cast to a uint8_t pointer for types
-        ret = this->getc(*reinterpret_cast<uint8_t*>(buf));
+        ret = this->getc(*reinterpret_cast<uint8_t *>(buf));
         // Check if we should stop after this iteration
         if(*buf == until || ret != Error::NONE) {
             should_continue = false;

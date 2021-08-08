@@ -32,6 +32,7 @@ target_include_directories(
 set_target_properties(
     "serial" PROPERTIES
     PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/serial.hpp"
+    PRIVATE_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/registers.hpp"
 )
 install(
     TARGETS "serial"
