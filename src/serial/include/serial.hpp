@@ -122,8 +122,21 @@ public:
      * state of the registers will be used.
      *
      * @param [in] settings How to configure the serial port
+     * @see Settings
      */
-    void configure(const Settings &settings);
+    void setConfiguration(const Settings &settings);
+    /**
+     * Retrieve the current configuration of the USART
+     *
+     * This will read the hardware registers set by `setConfiguration` and
+     * them into a `Settings` object. The state of the registers will not be
+     * changed.
+     *
+     * @param [out] settings How the port is configured
+     * @see Settings
+     * @see setConfiguration
+     */
+    void getConfiguration(Settings &settings);
     /**
      * Get the error flags currently set in the USART
      *

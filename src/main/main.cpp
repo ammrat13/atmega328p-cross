@@ -15,7 +15,7 @@ int main(void) {
     size_t num_read;
     char buf[256];
 
-    USART::PORT[0].configure(USART0_SETTINGS);
+    USART::PORT[0].setConfiguration(USART0_SETTINGS);
 
     while(1) {
         USART::PORT[0].gets(buf, 256, num_read, '\n');
