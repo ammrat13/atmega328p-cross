@@ -25,16 +25,16 @@ namespace USART {
 struct Settings {
 
     /** Baud-rate register value */
-    // This must be specified first since CPP struct fields can't be reordered
+    // This must be specified first since C++ struct fields can't be reordered
     unsigned baudrate_register : 12;
 
     /** Whether to use 2X mode for the baud-rate */
     bool use_2X : 1;
 
-    /** Whether to enable the transmitter */
-    bool tx_en : 1;
     /** Whether to enable the reciever */
     bool rx_en : 1;
+    /** Whether to enable the transmitter */
+    bool tx_en : 1;
 
     /** Possible settings for the number of stop bits to use */
     enum StopBits : bool {
@@ -52,7 +52,6 @@ struct Settings {
     };
     /** Setting for parity */
     Parity parity : 2;
-
 }; // struct Settings
 
 /**
@@ -123,20 +122,21 @@ public:
      *
      * @param [in] settings How to configure the serial port
      * @see Settings
+     * @see getConfiguration
      */
     void setConfiguration(const Settings &settings);
     /**
      * Retrieve the current configuration of the USART
      *
-     * This will read the hardware registers set by `setConfiguration` and
+     * This will read the hardware registers set by `setConfiguration` and place
      * them into a `Settings` object. The state of the registers will not be
      * changed.
      *
-     * @param [out] settings How the port is configured
+     * @return How the port is configured
      * @see Settings
      * @see setConfiguration
      */
-    void getConfiguration(Settings &settings);
+    Settings getConfiguration();
     /**
      * Get the error flags currently set in the USART
      *
