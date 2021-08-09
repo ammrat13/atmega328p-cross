@@ -37,7 +37,7 @@ void USART::setConfiguration(const Settings &settings) {
     B_REG = (0 << 5) | (0 << 2) | (settings.rx_en << 4) | (settings.tx_en << 3);
 }
 
-Settings USART::getConfiguration() {
+Settings USART::getConfiguration() const {
 
     // Get the values in all the registers
     // This is so we don't repeatedly read from them

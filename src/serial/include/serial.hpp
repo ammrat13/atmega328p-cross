@@ -142,7 +142,7 @@ public:
      * @see Settings
      * @see setConfiguration
      */
-    Settings getConfiguration();
+    Settings getConfiguration() const;
     /**
      * Get the error flags currently set in the USART
      *
@@ -157,11 +157,12 @@ public:
     /**
      * Put a character onto the USART
      * @param [in] c The character to put
+     * @param [in] times How many times to output the character
      * @return `Error::DISABLED` if the USART's transmitter is disabled, and
      *         `Error::NONE` otherwise
      * @see putcNoDisableCheck
      */
-    Error putc(uint8_t c);
+    Error putc(uint8_t c, size_t times = 1);
     /**
      * Put `len` bytes from `buf` onto the USART
      * @param [in] buf The bytes to put

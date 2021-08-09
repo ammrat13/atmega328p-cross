@@ -16,14 +16,19 @@ void USART::putcNoDisableCheck(uint8_t c) {
 }
 
 
-Error USART::putc(uint8_t c) {
+Error USART::putc(uint8_t c, size_t times /* = 1 */) {
 
     // Check to make sure the transmitter is enabled
     if(this->getConfiguration().tx_en == false) {
         return Error::DISABLED;
     }
 
-    this->putcNoDisableCheck(c);
+    // Put out the character as many times as needed
+    for(size_t i = 0; i < times; i++) {
+        this->putcNoDisableCheck(c);
+    }
+
+    // Return
     return Error::NONE;
 }
 
