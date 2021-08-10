@@ -23,7 +23,7 @@ Error USART::getcNoDisableCheck(uint8_t &c) {
 Error USART::getc(uint8_t &c) {
 
     // Check to make sure the receiver is enabled
-    if(this->getConfiguration().rx_en == false) {
+    if(!this->getConfiguration().rx_en) {
         return Error::DISABLED;
     }
 
@@ -34,7 +34,7 @@ Error USART::getc(uint8_t &c) {
 Error USART::getn(uint8_t *buf, size_t len, size_t &read) {
 
     // Check to make sure the receiver is enabled
-    if(this->getConfiguration().rx_en == false) {
+    if(!this->getConfiguration().rx_en) {
         return Error::DISABLED;
     }
 
@@ -58,7 +58,7 @@ Error USART::getn(uint8_t *buf, size_t len, size_t &read) {
 Error USART::gets(char *buf, size_t len, size_t &read, char until) {
 
     // Check to make sure the receiver is enabled
-    if(this->getConfiguration().rx_en == false) {
+    if(!this->getConfiguration().rx_en) {
         return Error::DISABLED;
     }
 

@@ -11,6 +11,7 @@ add_library(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/put.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/get.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/flush.cpp"
 )
 target_compile_options(
     "serial" PRIVATE

@@ -19,7 +19,7 @@ void USART::putcNoDisableCheck(uint8_t c) {
 Error USART::putc(uint8_t c, size_t times /* = 1 */) {
 
     // Check to make sure the transmitter is enabled
-    if(this->getConfiguration().tx_en == false) {
+    if(!this->getConfiguration().tx_en) {
         return Error::DISABLED;
     }
 
@@ -35,7 +35,7 @@ Error USART::putc(uint8_t c, size_t times /* = 1 */) {
 Error USART::putn(const uint8_t *buf, size_t len) {
 
     // Check to make sure the transmitter is enabled
-    if(this->getConfiguration().tx_en == false) {
+    if(!this->getConfiguration().tx_en) {
         return Error::DISABLED;
     }
 
@@ -50,7 +50,7 @@ Error USART::putn(const uint8_t *buf, size_t len) {
 Error USART::puts(const char *buf) {
 
     // Check to make sure the transmitter is enabled
-    if(this->getConfiguration().tx_en == false) {
+    if(!this->getConfiguration().tx_en) {
         return Error::DISABLED;
     }
 

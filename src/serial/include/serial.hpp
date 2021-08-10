@@ -123,8 +123,12 @@ public:
      *
      * This will modify hardware registers to bring them in line with the
      * configuration given. It will also enable the USART if that option was
-     * given. This must be done before using the USART, otherwise the default
-     * state of the registers will be used.
+     * given.
+     *
+     * This must be done before using the USART, otherwise the default state of
+     * the registers will be used. Additionally, this function will completely
+     * disable the USART before reenabling it, and it will flush all the buffers
+     * in the process.
      *
      * @param [in] settings How to configure the serial port
      * @see Settings
@@ -222,6 +226,18 @@ public:
      * @see getc
      */
     Error gets(char *buf, size_t len, size_t &read, char until);
+
+    /**
+     * Flush the receive buffer and drop the data in it
+     *
+     * This function will essentially turn the receive functionality off and on
+     * again, clearing all the data in the queue.
+     */
+    void flushRX();
+    // It doesn't make much sense to have a `flushTX`. It would require reading
+    // the TXCn bit of the serial port, with the program spinlocking if nothing
+    // was put to send before flushing. Also, there's a race condition with
+    // setting the bit before sending the data.
 
 private:
 
