@@ -237,10 +237,6 @@ public:
      * again, clearing all the data in the queue.
      */
     void flushRX();
-    // It doesn't make much sense to have a `flushTX`. It would require reading
-    // the TXCn bit of the serial port, with the program spinlocking if nothing
-    // was put to send before flushing. Also, there's a race condition with
-    // setting the bit before sending the data.
 
 private:
 
