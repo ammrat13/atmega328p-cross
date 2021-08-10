@@ -5,10 +5,14 @@
 namespace USART {
 
 
-Error USART::getcNoDisableCheck(uint8_t &c) {
+Error USART::getc(uint8_t &c) {
+
+    // Check to make sure the receiver is enabled
+    if(!this->configuration.rx_en) {
+        return Error::DISABLED;
+    }
 
     // Wait for there to be data in the recieve buffer
-    // This is what blocks if the receiver is disabled
     while((A_REG & (1 << 7)) == 0);
 
     // Read the data and return
@@ -19,22 +23,10 @@ Error USART::getcNoDisableCheck(uint8_t &c) {
     return ret;
 }
 
-
-Error USART::getc(uint8_t &c) {
-
-    // Check to make sure the receiver is enabled
-    if(!this->getConfiguration().rx_en) {
-        return Error::DISABLED;
-    }
-
-    // Otherwise, just do the read
-    return this->getcNoDisableCheck(c);
-}
-
 Error USART::getn(uint8_t *buf, size_t len, size_t &read) {
 
     // Check to make sure the receiver is enabled
-    if(!this->getConfiguration().rx_en) {
+    if(!this->configuration.rx_en) {
         return Error::DISABLED;
     }
 
@@ -47,7 +39,7 @@ Error USART::getn(uint8_t *buf, size_t len, size_t &read) {
     bool should_continue = true;
     for(read = 0; read < len && should_continue; read++, buf++) {
         // Read a character
-        ret = this->getcNoDisableCheck(*buf);
+        ret = this->getc(*buf);
         // Check if we continue after this iteration
         should_continue = ret == Error::NONE;
     }
@@ -58,7 +50,7 @@ Error USART::getn(uint8_t *buf, size_t len, size_t &read) {
 Error USART::gets(char *buf, size_t len, size_t &read, char until) {
 
     // Check to make sure the receiver is enabled
-    if(!this->getConfiguration().rx_en) {
+    if(!this->configuration.rx_en) {
         return Error::DISABLED;
     }
 
@@ -72,7 +64,7 @@ Error USART::gets(char *buf, size_t len, size_t &read, char until) {
     for(read = 0; read < len-1 && should_continue; read++, buf++) {
         // Read a character
         // Cast to a uint8_t pointer for types
-        ret = this->getcNoDisableCheck(*reinterpret_cast<uint8_t *>(buf));
+        ret = this->getc(*reinterpret_cast<uint8_t *>(buf));
         // Check if we should continue after this iteration
         should_continue = ret == Error::NONE && *buf != until;
     }

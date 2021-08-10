@@ -22,7 +22,7 @@ namespace USART {
  * baud-rate with 2X if needed. This library does not allow the user to
  * configure the number of bits to work with - it's always 8-bit.
  */
-struct Settings {
+struct Configuration {
 
     /** Baud-rate register value */
     // This must be specified first since C++ struct fields can't be reordered
@@ -41,7 +41,7 @@ struct Settings {
         ONE = 0,
         TWO = 1,
     };
-    /** Whether to use one (`false`) or two (`true`) stop bits */
+    /** Whether to use one or two stop bits */
     StopBits stop_bits : 1;
 
     /** Possible settings for the parity bits to use */
@@ -52,7 +52,16 @@ struct Settings {
     };
     /** Setting for parity */
     Parity parity : 2;
+
+    /**
+     * Startup configuration of USARTS
+     *
+     * On boot, hardware serial ports are configured in a certain way. This
+     * field is that configuration.
+     */
+    static const Configuration STARTUP;
 }; // struct Settings
+
 
 /**
  * Structure to report errors USART operations
@@ -75,6 +84,7 @@ enum Error : uint8_t {
     FRAME = 4,    /** Frame error from `FEn` */
     DISABLED = 8, /** Required functionality is disabled by the configuration */
 }; // enum Error
+
 /** Bitwise AND for the error type */
 Error operator&(const Error lhs, const Error rhs);
 /** Bitwise AND assignment for the error type */
@@ -104,7 +114,6 @@ Error& operator|=(Error &lhs, const Error rhs);
  *   - 1-byte Data Register
  *
  * The base address the constructor takes is that of Configuration Register A.
- * Use aggregate initialization to set it.
  */
 class USART {
 
@@ -119,7 +128,18 @@ public:
     const uintptr_t base_address;
 
     /**
-     * Configure the USART based on the settings given
+     * Construct a USART object
+     *
+     * This should only really be done at the start of the program. It takes in
+     * a base address, which must correspond to a hardware serial port. The
+     * configuration is set to what it would be on bootup.
+     *
+     * @param [in] base The base address of the USART
+     */
+    USART(uintptr_t base);
+
+    /**
+     * Configure the USART based on the configuration given
      *
      * This will modify hardware registers to bring them in line with the
      * configuration given. It will also enable the USART if that option was
@@ -130,23 +150,19 @@ public:
      * disable the USART before reenabling it, and it will flush all the buffers
      * in the process.
      *
-     * @param [in] settings How to configure the serial port
-     * @see Settings
-     * @see getConfiguration
+     * @param [in] config How to configure the serial port
      */
-    void setConfiguration(const Settings &settings);
+    void setConfiguration(const Configuration &config);
     /**
      * Retrieve the current configuration of the USART
      *
      * This will read the hardware registers set by `setConfiguration` and place
-     * them into a `Settings` object. The state of the registers will not be
-     * changed.
+     * them into a `Configuration` object. The state of the registers will not
+     * be changed.
      *
      * @return How the port is configured
-     * @see Settings
-     * @see setConfiguration
      */
-    Settings getConfiguration() const;
+    Configuration getConfiguration() const;
     /**
      * Get the error flags currently set in the USART
      *
@@ -161,12 +177,10 @@ public:
     /**
      * Put a character onto the USART
      * @param [in] c The character to put
-     * @param [in] times How many times to output the character
      * @return `Error::DISABLED` if the USART's transmitter is disabled, and
      *         `Error::NONE` otherwise
-     * @see putcNoDisableCheck
      */
-    Error putc(uint8_t c, size_t times = 1);
+    Error putc(uint8_t c);
     /**
      * Put `len` bytes from `buf` onto the USART
      * @param [in] buf The bytes to put
@@ -189,7 +203,6 @@ public:
      * Get a character from the USART
      * @param [out] c The character received
      * @return Any errors
-     * @see getcNoDisableCheck
      */
     Error getc(uint8_t &c);
     /**
@@ -254,33 +267,13 @@ private:
     static constexpr size_t UDRn_OFFSET = 0x6;
 
     /**
-     * Like `putc` except it doesn't check if the transmitter is disabled
+     * Holds the current configuration of the USART
      *
-     * If this function is called when the transmitter is off, it will just
-     * hang. So, be sure to check that before calling.
-     *
-     * This function cannot return an error. It can't return `Error::DISABLED`,
-     * and all the other errors have to do with reception. Thus, the return type
-     * is `void`.
-     *
-     * @param [in] c The character to put
-     * @see putc
+     * We cache the configuration instead of reading from hardware registers
+     * every time. It saves a lot of time, especially in `putc` which is usually
+     * called in a tight loop. There is data redundancy though.
      */
-    void putcNoDisableCheck(uint8_t c);
-    /**
-     * Like `getc` except it doesn't check if the receiver is disabled
-     *
-     * If this function is called when the receiver is off, it will just hang.
-     * So, be sure to check that before calling.
-     *
-     * This function can still return errors, though it will not return
-     * `Error::DISABLED`. All the hardware flags are for errors in reception.
-     * These hardware flags will be destroyed by a call to this function.
-     *
-     * @param [out] c The character received
-     * @see getc
-     */
-    Error getcNoDisableCheck(uint8_t &c);
+    Configuration configuration;
 }; // class USART
 
 

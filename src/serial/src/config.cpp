@@ -5,68 +5,55 @@
 namespace USART {
 
 
-#ifdef __AVR_ATmega328P__
-    USART PORT[NUM_PORTS] = {
-        USART{0xc0},
-    };
-#endif
+const Configuration Configuration::STARTUP = Configuration {
+    .baudrate_register = 0,
+    .use_2X = false,
+    .rx_en = false,
+    .tx_en = false,
+    .stop_bits = Configuration::StopBits::ONE,
+    .parity    = Configuration::Parity::NONE,
+};
 
 
-void USART::setConfiguration(const Settings &settings) {
+USART::USART(uintptr_t base) :
+    base_address(base),
+    configuration(Configuration::STARTUP)
+{}
 
-    // Disable USART (temporarily)
-    // Disable interrupts
-    // Set the high bits for 8-bit mode
-    B_REG = (0 << 3) | (0 << 5) | (0 << 2);
+void USART::setConfiguration(const Configuration &config) {
 
-    // Clear the transmit complete flag by writing one to it
-    // Disable multi-processor communication
-    // Set 2X if needed
-    A_REG = (1 << 6) | (0 << 0) | (settings.use_2X << 1);
+    // Set the cached field to the configuration provided
+    // This way, we don't have to fetch it from hardware every time
+    // We still have to update the hardware though
+    this->configuration = config;
 
-    // Set the mode to asynchronous
-    // Set the data size to 8-bit
-    // Set the parity and stop bits
-    C_REG = (0 << 6) | (3 << 1) | (settings.parity << 4) | (settings.stop_bits << 3);
+    // Disable the USART temporarily
+    // Nuke all the other configuration in there
+    B_REG = 0;
 
-    // Set the baud-rate register
-    BAUD_REG = settings.baudrate_register;
+    // Set up the A register
+    // * U2Xn
+    // * TXCn  = Reset
+    // * MPCMn = No
+    A_REG = (config.use_2X << 1) | (1 << 6) | (0 << 0);
+    // Set up the C register
+    // * UPMn
+    // * USBSn
+    // * UMSELn = Asynchronous
+    // * UCSZn  = 8-bit
+    C_REG = (config.parity << 4) | (config.stop_bits << 3) | (0 << 6) | (3 << 1);
+    // Set up the baud rate
+    BAUD_REG = config.baudrate_register;
 
-    // Finally, enable the reciever and transmitter as needed
-    // Use the same settings from before
-    B_REG = (0 << 5) | (0 << 2) | (settings.rx_en << 4) | (settings.tx_en << 3);
+    // Enable the USART
+    // Set up the B register at the same time
+    // * IEn   = Off
+    // * UCSZn = 8-bit
+    B_REG = (config.rx_en << 4) | (config.tx_en << 3) | (0 << 5) | (0 << 2);
 }
 
-Settings USART::getConfiguration() const {
-
-    // Get the values in all the registers
-    // This is so we don't repeatedly read from them
-    uint16_t baud_val = BAUD_REG;
-    uint8_t a_val = A_REG;
-    uint8_t b_val = B_REG;
-    uint8_t c_val = C_REG;
-
-    // Fetch all the settings from the registers
-    return Settings {
-        // Baud-rate in the baud-rate register
-        .baudrate_register = baud_val,
-
-        // Settings from the A register
-        // * U2X
-        .use_2X = ((a_val >> 1) & 1) != 0,
-
-        // Settings from the B register
-        // * RXEN
-        // * TXEN
-        .rx_en = ((b_val >> 4) & 1) != 0,
-        .tx_en = ((b_val >> 3) & 1) != 0,
-
-        // Settings from the C register
-        // * Stop bits
-        // * Parity
-        .stop_bits = static_cast<Settings::StopBits>((c_val >> 3) & 1),
-        .parity    = static_cast<Settings::Parity>  ((c_val >> 4) & 3),
-    };
+Configuration USART::getConfiguration() const {
+    return this->configuration;
 }
 
 Error USART::getError() const {
@@ -74,6 +61,13 @@ Error USART::getError() const {
     // We defined the ordering so it's just the value
     return static_cast<Error>((A_REG >> 2) & 7);
 }
+
+
+#ifdef __AVR_ATmega328P__
+    USART PORT[NUM_PORTS] = {
+        USART{0xc0},
+    };
+#endif
 
 
 }; // namespace USART
