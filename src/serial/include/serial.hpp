@@ -26,7 +26,7 @@ struct Configuration {
 
     /** Baud-rate register value */
     // This must be specified first since C++ struct fields can't be reordered
-    unsigned baudrate_register : 12;
+    uint16_t baudrate_register : 12;
 
     /** Whether to use 2X mode for the baud-rate */
     bool use_2X : 1;
@@ -78,11 +78,16 @@ struct Configuration {
  * receive or transmit is called when that functionality is disabled.
  */
 enum Error : uint8_t {
-    NONE = 0,     /** Indicates success */
-    PARITY = 1,   /** Parity error from `UPEn` */
-    OVERRUN = 2,  /** Data overrun from `DORn` */
-    FRAME = 4,    /** Frame error from `FEn` */
-    DISABLED = 8, /** Required functionality is disabled by the configuration */
+    /** Indicates success */
+    NONE = 0,
+    /** Parity error from `UPEn` */
+    PARITY = 1,
+    /** Data overrun from `DORn` */
+    OVERRUN = 2,
+    /** Frame error from `FEn` */
+    FRAME = 4,
+    /** Required functionality is disabled by the configuration */
+    DISABLED = 8,
 }; // enum Error
 
 /** Bitwise AND for the error type */
@@ -114,6 +119,10 @@ Error& operator|=(Error &lhs, const Error rhs);
  *   - 1-byte Data Register
  *
  * The base address the constructor takes is that of Configuration Register A.
+ *
+ * The implementation here does not buffer the transmitter or receiver. It also
+ * uses polling instead of interrupts. Indeed, the serial interrupts are
+ * disabled by `setConfiguration`.
  */
 class USART {
 
@@ -192,7 +201,8 @@ public:
     /**
      * Get a character from the USART
      * @param [out] c The character received
-     * @return Any errors
+     * @return Any errors, including possibly `Error::DISABLED` if the USART's
+     *         receiver is disabled, otherwise `Error::NONE`
      */
     Error getc(uint8_t &c);
     /**
@@ -283,7 +293,7 @@ private:
  * This array has `NUM_PORTS` entries, one for each hardware serial interface.
  * The contents change depending on the platform.
  *
- * @see NUM_SERIAL
+ * @see NUM_PORTS
  */
 extern USART PORT[NUM_PORTS];
 
