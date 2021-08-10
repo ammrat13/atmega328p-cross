@@ -163,16 +163,6 @@ public:
      * @return How the port is configured
      */
     Configuration getConfiguration() const;
-    /**
-     * Get the error flags currently set in the USART
-     *
-     * Read from the hardware registers to get this information. It will not
-     * modify the registers, just read them. Note however that reading from the
-     * USART will destroy these error flags.
-     *
-     * @return The current error flags set
-     */
-    Error getError() const;
 
     /**
      * Put a character onto the USART

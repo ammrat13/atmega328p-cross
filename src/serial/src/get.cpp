@@ -15,10 +15,9 @@ Error USART::getc(uint8_t &c) {
     // Wait for there to be data in the recieve buffer
     while((A_REG & (1 << 7)) == 0);
 
-    // Read the data and return
-    // We have to read the return value first since it goes invalid when we read
-    //  the data
-    Error ret = this->getError();
+    // Read the errors and the character, then return
+    // We have to read the errors first since they are paired with the data
+    Error ret = static_cast<Error>((A_REG >> 2) & 7);
     c = DATA_REG;
     return ret;
 }

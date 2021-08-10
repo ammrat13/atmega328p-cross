@@ -56,12 +56,6 @@ Configuration USART::getConfiguration() const {
     return this->configuration;
 }
 
-Error USART::getError() const {
-    // Errors are in the A register
-    // We defined the ordering so it's just the value
-    return static_cast<Error>((A_REG >> 2) & 7);
-}
-
 
 #ifdef __AVR_ATmega328P__
     USART PORT[NUM_PORTS] = {
